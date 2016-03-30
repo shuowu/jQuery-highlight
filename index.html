@@ -19,6 +19,20 @@
     </section>
 
     <section class="main-content">
+      <div class="demo">
+        <button id="highlight-one-button">highlight one target</button>
+        <button id="highlight-multiple-button">highlight multiple target</button>
+        <button id="highlight-in-sequence-button">highlight targets in sequence</button>
+        <button id="destroy-button">destroy</button>
+
+        <div class="test1">
+          Container 1
+        </div>
+        <div class="test2">
+          Container 2
+        </div>
+      </div>
+
       <h3>
 <a id="welcome-to-github-pages" class="anchor" href="#welcome-to-github-pages" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Welcome to GitHub Pages.</h3>
 
@@ -52,6 +66,50 @@
 
     </section>
 
-  
+
+    <script src="./example/jquery.js"></script>
+    <script src="jquery.highlight.js"></script>
+    <script>
+      $(document).ready(function() {
+        // Highlight one target
+        $('#highlight-one-button').on('click', function() {
+          $('.test1').highlightOverlay();
+        });
+
+        // Highlight multiple target
+        $('#highlight-multiple-button').on('click', function() {
+          $('.test1, .test2').highlightOverlay();
+        });
+
+        // Highlight targets one by one
+        $('#highlight-in-sequence-button').on('click', function() {
+          var selectors = [
+            'h2',
+            '#highlight-one-button',
+            '#highlight-multiple-button',
+            '#highlight-in-sequence-button',
+            '#destroy-button',
+            '.test1',
+            '.test2'
+          ];
+          var i = 0;
+          $(selectors[i++]).highlightOverlay();
+          var timer = setInterval(function() {
+            if (i >= selectors.length) {
+              clearInterval(timer);
+              $.dismissHighlightOverlay();
+              return;
+            }
+            $(selectors[i++]).highlightOverlay();
+          }, 1000);
+        });
+
+        // Destroy highlight overlay
+        $('#destroy-button').on('click', function() {
+          $.destroyHighlightOverlay();
+        })
+      });
+    </script>
+
   </body>
 </html>
