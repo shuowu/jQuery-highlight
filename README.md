@@ -1,18 +1,21 @@
 # jQuery-highlight-overlay
-A jQuery plugin to highlight multiple targets by providing a svg overlay
-User can still interact with highlighted elements when overlay showing up
-Click on overlay will fade overlay out
+jQuery highlight is a jQuery based plugin to provide highlight overlay for complex website and web apps. 
+It can highlight multiple targets by providing a svg overlay. 
+At same time, user can still interact with highlighted elements when overlay showing up. 
+User can dismiss highlight overlay by clicking on non-highlighted area.
 
 Check out example in ./example folder
+
+Demo: http://shuowu.github.io/jQuery-highlight/
 
 ## Build
 Command `npm run build` will generate both original and minified files in ./dist folder
 
 ## Using the plugin
 - Make sure you have jQuery in your site
-- Add the @jquery.highlight.min.js@ file to your site.
-- Call @$(selector).highlightOverlay()@ method on target element you want to highlight.
-- You can also pass custom @option@ object to customize the highlight overlay.
+- Add the `jquery.highlight.min.js` file to your site.
+- Call `$(selector).highlightOverlay()` method on target element you want to highlight.
+- You can also pass custom `options` object to customize the highlight overlay.
 
 ## Options
 ```javascript
