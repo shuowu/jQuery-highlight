@@ -5,16 +5,16 @@ Click on overlay will fade overlay out
 
 Check out example in ./example folder
 
-h2. Build
-'npm run build' will generate both original and minified files in ./dist folder
+## Build
+Command `npm run build` will generate both original and minified files in ./dist folder
 
-h2. Using the plugin
-1. Make sure you have jQuery in your site
-2. Add the @jquery.highlight.min.js@ file to your site.
-3. Call @$(selector).highlightOverlay()@ method on target element you want to highlight.
-4. You can also pass custom @option@ object to customize the highlight overlay.
+## Using the plugin
+- Make sure you have jQuery in your site
+- Add the @jquery.highlight.min.js@ file to your site.
+- Call @$(selector).highlightOverlay()@ method on target element you want to highlight.
+- You can also pass custom @option@ object to customize the highlight overlay.
 
-h2. Options
+## Options
 ```javascript
   var default = {
     id: 'highlight-overlay',
