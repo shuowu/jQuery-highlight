@@ -1,5 +1,4 @@
 (function($) {
-  var settings = null;
   var _default = {
     id: 'highlight-overlay',
     className: 'highlight-overlay',
@@ -11,6 +10,7 @@
     onStartCallback: null,
     onDismissCallback: null
   };
+  var settings = _default;
 
   var overlayEl = null;
   var svgEl = null;
@@ -22,7 +22,9 @@
       return;
     }
 
-    settings = $.extend(_default, options);
+    if (options) {
+      settings = $.extend(_default, options);
+    }
 
     // Append overlay to document
     var template = '<div id="' + settings['id'] + '" class="' + settings['className'] +
