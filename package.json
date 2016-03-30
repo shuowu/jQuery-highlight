@@ -1,0 +1,29 @@
+{
+  "name": "jquery-highlight-overlay",
+  "version": "1.0.0",
+  "description": "A jQuery plugin to highlight multiple targets by providing a svg overlay",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/shuowu/jQuery-highlight-overlay.git"
+  },
+  "keywords": [
+    "jquery-plugin",
+    "highlight",
+    "overlay",
+    "svg"
+  ],
+  "author": "Shuo Wu",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/shuowu/jQuery-highlight-overlay/issues"
+  },
+  "homepage": "https://github.com/shuowu/jQuery-highlight-overlay",
+  "devDependencies": {
+    "jquery": "^2.2.2",
+    "uglify-js": "^2.6.2"
+  },
+  "scripts": {
+    "uglify": "./node_modules/uglify-js/bin/uglifyjs jquery.highlight.js -o ./dist/jquery.highlight.min.js",
+    "build": "cp jquery.highlight.js ./dist/jquery.highlight.js && npm run uglify"
+  }
+}

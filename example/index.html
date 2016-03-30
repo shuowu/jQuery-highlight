@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+  <meta charset="UTF-8">
+  <title>jQuery highlight overlay plugin example page</title>
+
+  <style>
+    .test1, .test2 {
+      position: absolute;
+      display: block;
+      border-style: solid;
+      border-width: 5px;
+      border-color: red;
+    }
+    .test1 {
+      width: 50px;
+      height: 50px;
+      top: 150px;
+      left: 30px;
+    }
+    .test2 {
+      width: 70px;
+      height: 50px;
+      top: 150px;
+      left: 300px;
+    }
+  </style>
+</head>
+<body>
+
+  <h2>jQuery targets highlight plugin demo page</h2>
+
+  <button id="highlight-one-button">highlight one target</button>
+  <button id="highlight-multiple-button">highlight multiple target</button>
+  <button id="highlight-in-sequence-button">highlight targets in sequence</button>
+  <button id="destroy-button">destroy</button>
+
+  <div class="test1">
+    Container 1
+  </div>
+  <div class="test2">
+    Container 2
+  </div>
+
+  <script src="jquery.js"></script>
+  <script src="../jquery.highlight.js"></script>
+  <script>
+    $(document).ready(function() {
+      // Highlight one target
+      $('#highlight-one-button').on('click', function() {
+        $('.test1').highlightOverlay();
+      });
+
+      // Highlight multiple target
+      $('#highlight-multiple-button').on('click', function() {
+        $('.test1, .test2').highlightOverlay();
+      });
+
+      // Highlight targets one by one
+      $('#highlight-in-sequence-button').on('click', function() {
+        var selectors = [
+          'h2',
+          '#highlight-one-button',
+          '#highlight-multiple-button',
+          '#highlight-in-sequence-button',
+          '#destroy-button',
+          '.test1',
+          '.test2'
+        ];
+        var i = 0;
+        $(selectors[i++]).highlightOverlay();
+        var timer = setInterval(function() {
+          if (i >= selectors.length) {
+            clearInterval(timer);
+            $.dismissHighlightOverlay();
+            return;
+          }
+          $(selectors[i++]).highlightOverlay();
+        }, 1000);
+      });
+
+      // Destroy highlight overlay
+      $('#destroy-button').on('click', function() {
+        $.destroyHighlightOverlay();
+      })
+    });
+  </script>
+</body>
+</html>
