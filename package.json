@@ -1,6 +1,6 @@
 {
   "name": "jquery-highlight-overlay",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A jQuery plugin to highlight multiple targets by providing a svg overlay",
   "repository": {
     "type": "git",
