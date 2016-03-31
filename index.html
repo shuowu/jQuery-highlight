@@ -8,6 +8,21 @@
     <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
     <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
     <link rel="stylesheet" type="text/css" href="stylesheets/github-light.css" media="screen">
+    <style>
+      .demo1,
+      .demo2,
+      .demo3,
+      .demo4 {
+        display: block;
+        position: relative;
+        border-style: solid;
+        border-width: 5px;
+        border-color: red;
+        margin: 10px;
+        height: 150px;
+        width: 50%
+      }
+    </style>
   </head>
   <body>
     <section class="page-header">
@@ -32,6 +47,19 @@
         <button id="highlight-multiple-button">highlight multiple target</button>
         <button id="highlight-in-sequence-button">highlight targets in sequence</button>
         <button id="destroy-button">destroy</button>
+
+        <div class="demo1">
+          Demo 1
+        </div>
+        <div class="demo2">
+          Demo 2
+        </div>
+        <div class="demo3">
+          Demo 3
+        </div>
+        <div class="demo4">
+          Demo 4
+        </div>
       </div>
 
       <footer class="site-footer">
@@ -54,7 +82,7 @@
 
         // Highlight multiple target
         $('#highlight-multiple-button').on('click', function() {
-          $('.btn').highlightOverlay();
+          $('.demo2, .demo4').highlightOverlay();
         });
 
         // Highlight targets one by one
@@ -68,7 +96,11 @@
             '#highlight-one-button',
             '#highlight-multiple-button',
             '#highlight-in-sequence-button',
-            '#destroy-button'
+            '#destroy-button',
+            '.demo1',
+            '.demo2',
+            '.demo3',
+            '.demo4'
           ];
           var i = 0;
           $(selectors[i++]).highlightOverlay();

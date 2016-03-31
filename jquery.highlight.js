@@ -37,18 +37,11 @@
       'display': 'none',
       'position': 'absolute',
       'z-index': settings.zIndex,
-      'width': '100%',
-      'height': '100%',
-      'top': '0',
-      'left': '0',
+      'top': 0,
+      'left': 0,
       'pointer-events': 'none'
     });
     svgEl = overlayEl.find('svg');
-    svgEl.css({
-      'width': '100%',
-      'height': '100%',
-      'opacity': settings.opacity
-    });
     pathEl = svgEl.find('path');
     pathEl.css({
       'fill': settings.color
@@ -60,20 +53,48 @@
       return;
     }
 
-    // Init full screen overlay
-    var windowWidth = $(window).width();
-    var windowHeight = $(window).height();
-    var path = 'M0,0 l' + windowWidth + ',0 l0,' + windowHeight + ' l-' + windowWidth + ',0 l0,' + windowHeight;
+    // Calculate viewport offset
+    var wTop = window.scrollY;
+    var wLeft = window.scrollX;
+    var wBottom = wTop + window.innerHeight;
+    var wRight = wLeft + window.innerWidth;
+
+    // Check if first element in viewport
+    // If not scrollIntoView
+    var firstEl = els[0];
+    var offset = $(firstEl).offset();
+    var top = offset.top;
+    var left = offset.left;
+    var bottom = top + $(firstEl).outerHeight();
+    var right = left + $(firstEl).outerWidth();
+    if(top < wTop || left < wLeft || bottom > wBottom || right > wRight) {
+      firstEl.scrollIntoView();
+    }
+
+    // Build viewport path
+    wTop = window.scrollY;
+    wLeft = window.scrollX;
+    wBottom = wTop + window.innerHeight;
+    wRight = wLeft + window.innerWidth;
+    svgEl.css({
+      'width': wRight + 'px',
+      'height': wBottom + 'px',
+      'opacity': settings.opacity
+    });
+    var path = 'M' + wLeft + ',' + wTop +
+        ' L' + wRight + ',' + wTop +
+        ' L' + wRight + ',' + wBottom +
+        ' L' + wLeft + ',' + wBottom +
+        ' L' + wLeft + ',' + wTop;
 
     // Highlight each target
     els.each(function() {
-      var offset = $(this).offset();
-      var top = offset.top;
-      var left = offset.left;
-      var bottom = top + $(this).outerHeight();
-      var right = left + $(this).outerWidth();
-
-      path += ' M' + left + ' ' + top +
+      offset = $(this).offset();
+      top = offset.top;
+      left = offset.left;
+      bottom = top + $(this).outerHeight();
+      right = left + $(this).outerWidth();
+      path += ' M' + left + ',' + top +
           ' L' + left + ',' + bottom +
           ' L' + right + ',' + bottom +
           ' L' + right + ',' + top +
@@ -100,7 +121,7 @@
 
       // Handle overlay for window resize
       $(window).on('resize.highlight', function() {
-        resize(els, pathEl);
+        resize(els);
       });
 
       if (opt_callback) {
@@ -158,7 +179,7 @@
   };
 
   $.destroyHighlightOverlay = function() {
-    if (!settings['id']) {
+    if (!settings || !settings['id']) {
       return;
     }
 
