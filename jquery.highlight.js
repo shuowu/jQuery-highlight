@@ -113,7 +113,7 @@
       isDisplayed = true;
 
       // Handle click event outside target element
-      $(document).on('click.highlight', function(event) {
+      $(document).on('click.highlight touchstart.highlight', function(event) {
         if(!$(event.target).closest(els).length && !$(event.target).is(els)) {
           fadeOut();
         }
@@ -154,7 +154,7 @@
   };
 
   var unbindEvents = function() {
-    $(document).off('click.highlight');
+    $(document).off('click.highlight touchstart.highlight');
     $(window).off('resize.highlight');
   };
 
