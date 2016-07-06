@@ -8,7 +8,9 @@
     fadeInDuration: 400,
     fadeOutDuration: 400,
     onStartCallback: null,
-    onDismissCallback: null
+    onDismissCallback: null,
+    svgPathStyle: 'rect',
+    svgPathFunction: null
   };
   var settings = _default;
 
@@ -16,6 +18,14 @@
   var svgEl = null;
   var pathEl = null;
   var isDisplayed = false;
+
+  var svgRectPath = function(top, left, bottom, right) {
+    return 'M' + left + ',' + top +
+        ' L' + right + ',' + top +
+        ' L' + right + ',' + bottom +
+        ' L' + left + ',' + bottom +
+        ' L' + left + ',' + top;
+  };
 
   var init = function(options) {
     if (overlayEl) {
@@ -81,11 +91,7 @@
       'height': wBottom + 'px',
       'opacity': settings.opacity
     });
-    var path = 'M' + wLeft + ',' + wTop +
-        ' L' + wRight + ',' + wTop +
-        ' L' + wRight + ',' + wBottom +
-        ' L' + wLeft + ',' + wBottom +
-        ' L' + wLeft + ',' + wTop;
+    var path = svgRectPath(wTop, wLeft, wBottom, wRight);
 
     // Highlight each target
     els.each(function() {
@@ -94,11 +100,7 @@
       left = offset.left;
       bottom = top + $(this).outerHeight();
       right = left + $(this).outerWidth();
-      path += ' M' + left + ',' + top +
-          ' L' + left + ',' + bottom +
-          ' L' + right + ',' + bottom +
-          ' L' + right + ',' + top +
-          ' L' + left + ',' + top;
+      path += svgRectPath(top, left, bottom, right); 
     });
 
     pathEl.attr('d', path);
