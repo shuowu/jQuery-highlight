@@ -20,12 +20,23 @@
   var isDisplayed = false;
 
   var svgRectPath = function(top, left, bottom, right) {
-    return 'M' + left + ',' + top +
-        ' L' + right + ',' + top +
-        ' L' + right + ',' + bottom +
+    return ' M' + left + ',' + top +
         ' L' + left + ',' + bottom +
+        ' L' + right + ',' + bottom +
+        ' L' + right + ',' + top +
         ' L' + left + ',' + top;
   };
+
+  var svgCirclePath = function(top, left, bottom, right) {
+    // http://stackoverflow.com/questions/5737975/circle-drawing-with-svgs-arc-path
+    var r = Math.max(right - left, bottom - top) / 2;
+    var cx = left + (right - left)/2;
+    var cy = top + (bottom - top) / 2;
+    return ' M ' + cx + ' ' + cy +
+      ' m -' + r + ', 0 ' +
+      ' a ' + r + ',' + r + ' 0 1,0  ' + (r * 2) + ',0' +
+      ' a ' + r + ',' + r + ' 0 1,0 -' + (r * 2) + ',0';
+  }
 
   var init = function(options) {
     if (overlayEl) {
@@ -91,16 +102,29 @@
       'height': wBottom + 'px',
       'opacity': settings.opacity
     });
-    var path = svgRectPath(wTop, wLeft, wBottom, wRight);
+    var path = 'M' + wLeft + ',' + wTop +
+        ' L' + wRight + ',' + wTop +
+        ' L' + wRight + ',' + wBottom +
+        ' L' + wLeft + ',' + wBottom +
+        ' L' + wLeft + ',' + wTop;
 
     // Highlight each target
+    var pathFunc = svgRectPath;  // Default function
+    if (settings.svgPathFunction) {
+      pathFunc = settings.svgPathFunction;
+    } else {
+      if (settings.svgPathStyle === 'circle') {
+        pathFunc = svgCirclePath;
+      }
+    }
+
     els.each(function() {
       offset = $(this).offset();
       top = offset.top;
       left = offset.left;
       bottom = top + $(this).outerHeight();
       right = left + $(this).outerWidth();
-      path += svgRectPath(top, left, bottom, right); 
+      path += pathFunc(top, left, bottom, right);
     });
 
     pathEl.attr('d', path);

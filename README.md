@@ -29,6 +29,9 @@ Command `npm run build` will generate both original and minified files in ./dist
     fadeOutDuration: 400,
     onStartCallback: null,
     onDismissCallback: null
+    svgPathStyle: ['circle'|'rect']   // Built-in styles
+    svgPathFunction: func // custom svg path generation function. Take 
+                          // parameters (top, left, bottom, right) 
   };
 ```
 
