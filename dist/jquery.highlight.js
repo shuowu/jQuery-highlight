@@ -8,7 +8,9 @@
     fadeInDuration: 400,
     fadeOutDuration: 400,
     onStartCallback: null,
-    onDismissCallback: null
+    onDismissCallback: null,
+    svgPathStyle: 'rect',
+    svgPathFunction: null
   };
   var settings = _default;
 
@@ -16,6 +18,25 @@
   var svgEl = null;
   var pathEl = null;
   var isDisplayed = false;
+
+  var svgRectPath = function(top, left, bottom, right) {
+    return ' M' + left + ',' + top +
+        ' L' + left + ',' + bottom +
+        ' L' + right + ',' + bottom +
+        ' L' + right + ',' + top +
+        ' L' + left + ',' + top;
+  };
+
+  var svgCirclePath = function(top, left, bottom, right) {
+    // http://stackoverflow.com/questions/5737975/circle-drawing-with-svgs-arc-path
+    var r = Math.max(right - left, bottom - top) / 2;
+    var cx = left + (right - left)/2;
+    var cy = top + (bottom - top) / 2;
+    return ' M ' + cx + ' ' + cy +
+      ' m -' + r + ', 0 ' +
+      ' a ' + r + ',' + r + ' 0 1,0  ' + (r * 2) + ',0' +
+      ' a ' + r + ',' + r + ' 0 1,0 -' + (r * 2) + ',0';
+  }
 
   var init = function(options) {
     if (overlayEl) {
@@ -88,17 +109,22 @@
         ' L' + wLeft + ',' + wTop;
 
     // Highlight each target
+    var pathFunc = svgRectPath;  // Default function
+    if (settings.svgPathFunction) {
+      pathFunc = settings.svgPathFunction;
+    } else {
+      if (settings.svgPathStyle === 'circle') {
+        pathFunc = svgCirclePath;
+      }
+    }
+
     els.each(function() {
       offset = $(this).offset();
       top = offset.top;
       left = offset.left;
       bottom = top + $(this).outerHeight();
       right = left + $(this).outerWidth();
-      path += ' M' + left + ',' + top +
-          ' L' + left + ',' + bottom +
-          ' L' + right + ',' + bottom +
-          ' L' + right + ',' + top +
-          ' L' + left + ',' + top;
+      path += pathFunc(top, left, bottom, right);
     });
 
     pathEl.attr('d', path);
@@ -113,7 +139,7 @@
       isDisplayed = true;
 
       // Handle click event outside target element
-      $(document).on('click.highlight', function(event) {
+      $(document).on('click.highlight touchstart.highlight', function(event) {
         if(!$(event.target).closest(els).length && !$(event.target).is(els)) {
           fadeOut();
         }
@@ -154,7 +180,7 @@
   };
 
   var unbindEvents = function() {
-    $(document).off('click.highlight');
+    $(document).off('click.highlight touchstart.highlight');
     $(window).off('resize.highlight');
   };
 
