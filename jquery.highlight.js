@@ -10,7 +10,8 @@
     onStartCallback: null,
     onDismissCallback: null,
     svgPathStyle: 'rect',
-    svgPathFunction: null
+    svgPathFunction: null,
+    radius: 5
   };
   var settings = _default;
 
@@ -18,7 +19,27 @@
   var svgEl = null;
   var pathEl = null;
   var isDisplayed = false;
+  
+  // Whenever the element it's visible in the viewport
+  var isElementInViewport = function (el) {
 
+    //special bonus for those using jQuery
+    if (typeof jQuery === "function" && el instanceof jQuery) {
+        if (el.css('display') === 'none') { return false; }
+        if (el.css('visibility') === 'hidden') { return false; }
+        el = el[0];
+    }
+
+    var rect = el.getBoundingClientRect();
+
+    return (
+        rect.top >= 0 &&
+        rect.left >= 0 &&
+        rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) && /*or $(window).height() */
+        rect.right <= (window.innerWidth || document.documentElement.clientWidth) /*or $(window).width() */
+    );
+  }
+  
   var svgRectPath = function(top, left, bottom, right) {
     return ' M' + left + ',' + top +
         ' L' + left + ',' + bottom +
@@ -36,6 +57,22 @@
       ' m -' + r + ', 0 ' +
       ' a ' + r + ',' + r + ' 0 1,0  ' + (r * 2) + ',0' +
       ' a ' + r + ',' + r + ' 0 1,0 -' + (r * 2) + ',0';
+  }
+
+  var generateSvgRadiusPath = function(radius) {
+    return function(top, left, bottom, right) {
+      // http://stackoverflow.com/a/38118843/1132150
+      var r = radius;
+      return ' M' + left + ',' + (top + r) +
+          ' L' + left + ',' + (bottom - r) +
+          ' A' + r + ',' + r + ' 0 0,0 ' + (left + r) + ',' + bottom +
+          ' L' + (right - r) + ',' + bottom +
+          ' A' + r + ',' + r + ' 0 0,0 ' + right + ',' + (bottom - r) +
+          ' L' + right + ',' + (top + r) +
+          ' A' + r + ',' + r + ' 0 0,0 ' + (right - r) + ',' + top +
+          ' L' + (left + r) + ',' + top +
+          ' A' + r + ',' + r + ' 0 0,0 ' + left + ',' + (top + r);
+    };
   }
 
   var init = function(options) {
@@ -115,11 +152,14 @@
     } else {
       if (settings.svgPathStyle === 'circle') {
         pathFunc = svgCirclePath;
+      } else if (settings.svgPathStyle === 'radius') {
+        pathFunc = generateSvgRadiusPath(settings.radius);
       }
     }
 
     els.each(function() {
       offset = $(this).offset();
+      if (!isElementInViewport($(this))) { return; }
       top = offset.top;
       left = offset.left;
       bottom = top + $(this).outerHeight();
