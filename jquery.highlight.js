@@ -90,7 +90,7 @@
     overlayEl = $('.' + settings.className);
     overlayEl.css({
       'display': 'none',
-      'position': 'absolute',
+      'position': 'fixed',
       'overflow': 'hidden',
       'max-height': '100%',
       'z-index': settings.zIndex,
@@ -105,55 +105,99 @@
     });
   };
 
+  // Calculates the current viewport
+  //
+  // @return [Oobject] current viewport properties
+  var getViewPort = function () {
+    var top = window.scrollY ||
+              window.pageYOffset ||
+              document.documentElement.scrollTop;
+    var left = window.scrollX ||
+               window.pageXOffset ||
+               document.documentElement.scrollLeft;
+    var bottom = top + (
+                   window.innerHeight ||
+                   document.documentElement.clientHeight
+                 );
+    var right = left + (
+                  window.innerWidth ||
+                  document.documentElement.clientWidth
+                );
+    return {
+      top: top,
+      left: left,
+      bottom: bottom,
+      right: right,
+      height: bottom - top,
+      width: right - left
+    }
+  }
+
+  // Calculates the given element offset
+  //
+  // @return [Object] current viewport properties
+  var getElementOffset = function (element) {
+    var viewport = getViewPort()
+    var offset = $(element).offset();
+    var top = offset.top - viewport.top;
+    var left = offset.left - viewport.left;
+    var bottom = top + $(element).outerHeight();
+    var right = left + $(element).outerWidth();
+    return {
+      top: top,
+      left: left,
+      bottom: bottom,
+      right: right,
+      height: bottom - top,
+      width: right - left
+    }
+  }
+
+  var isElementInViewport = function (element) {
+    // Calculate viewport offset
+    var viewport = getViewPort()
+    var offset = $(element).offset();
+    var top = offset.top;
+    var left = offset.left;
+    var bottom = top + $(element).outerHeight();
+    var right = left + $(element).outerWidth();
+    return !(top < viewport.top || left < viewport.left || bottom > viewport.bottom || right > viewport.right)
+  }
+
   var resize = function(els) {
     if (!els || !els.length) {
       return;
     }
 
-    // Calculate viewport offset
-    var wTop = window.scrollY;
-    var wLeft = window.scrollX;
-    var wBottom = wTop + window.innerHeight;
-    var wRight = wLeft + window.innerWidth;
-
     // Check if first element in viewport
     // If not scrollIntoView
-    var firstEl = els[0];
-    var offset = $(firstEl).offset();
-    var top = offset.top;
-    var left = offset.left;
-    var bottom = top + $(firstEl).outerHeight();
-    var right = left + $(firstEl).outerWidth();
-    if(top < wTop || left < wLeft || bottom > wBottom || right > wRight) {
-      firstEl.scrollIntoView();
+    if (!isElementInViewport(els[0])) {
+      els[0].scrollIntoView();
     }
 
+    // Calculate viewport offset
+    var viewport = getViewPort()
+
     // Build viewport path
-    wTop = window.scrollY ||
-           window.pageYOffset ||
-           document.documentElement.scrollTop;
-    wLeft = window.scrollX ||
-            window.pageXOffset ||
-            document.documentElement.scrollLeft;
-    wBottom = wTop + (
-                window.innerHeight ||
-                document.documentElement.clientHeight
-              );
-    wRight = wLeft + (
-               window.innerWidth ||
-               document.documentElement.clientWidth
-             );
     svgEl.css({
-      'width': wRight + 'px',
-      'height': wBottom + 'px',
+      'width': viewport.right + 'px',
+      'height': viewport.bottom + 'px',
       'opacity': settings.opacity,
       'overflow': 'hidden'
     });
-    var path = 'M' + wLeft + ',' + wTop +
-        ' L' + wRight + ',' + wTop +
-        ' L' + wRight + ',' + wBottom +
-        ' L' + wLeft + ',' + wBottom +
-        ' L' + wLeft + ',' + wTop;
+
+    // Paint the main form wrapper
+    var path = 'M' + 0 + ',' + 0 +
+        ' L' + viewport.width + ',' + 0 +
+        ' L' + viewport.width + ',' + viewport.height +
+        ' L' + 0 + ',' + viewport.height +
+        ' L' + 0 + ',' + 0;
+
+    // var path = 'M' + viewport.left + ',' + viewport.top +
+    //     ' L' + viewport.right + ',' + viewport.top +
+    //     ' L' + viewport.right + ',' + viewport.bottom +
+    //     ' L' + viewport.left + ',' + viewport.bottom +
+    //     ' L' + viewport.left + ',' + viewport.top;
 
     // Highlight each target
     var pathFunc = svgRectPath;  // Default function
@@ -168,14 +212,10 @@
     }
 
     els.each(function() {
-      offset = $(this).offset();
       if (!isElementInViewport($(this))) { return; }
       if ($(this).css('display') === 'none') { return; }
-      top = offset.top;
-      left = offset.left;
-      bottom = top + $(this).outerHeight();
-      right = left + $(this).outerWidth();
-      path += pathFunc(top, left, bottom, right);
+      var item_offset = getElementOffset(this);
+      path += pathFunc(item_offset.top, item_offset.left, item_offset.bottom, item_offset.right);
     });
 
     pathEl.attr('d', path);
