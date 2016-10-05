@@ -168,14 +168,7 @@
         el = el[0];
     }
 
-    return isElementInViewport(element);
-    // var rect = el.getBoundingClientRect();
-    // return (
-    //     rect.top >= 0 &&
-    //     rect.left >= 0 &&
-    //     rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) && /*or $(window).height() */
-    //     rect.right <= (window.innerWidth || document.documentElement.clientWidth) /*or $(window).width() */
-    // );
+    return isElementInViewport(el);
   }
 
   var resize = function(els) {
@@ -220,7 +213,7 @@
     }
 
     els.each(function() {
-      if (!isElementInViewport($(this))) { return; }
+      if (!isElementVisible($(this))) { return; }
       if ($(this).css('display') === 'none') { return; }
       var item_offset = getElementOffset(this);
       path += pathFunc(item_offset.top, item_offset.left, item_offset.bottom, item_offset.right);
