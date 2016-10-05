@@ -1,4 +1,4 @@
-(function($) {
+(function ($) {
   var _default = {
     id: 'highlight-overlay',
     className: 'highlight-overlay',
@@ -19,14 +19,11 @@
   var svgEl = null;
   var pathEl = null;
   var isDisplayed = false;
-  
-  // Whenever the element it's visible in the viewport
+
   var isElementInViewport = function (el) {
 
     //special bonus for those using jQuery
     if (typeof jQuery === "function" && el instanceof jQuery) {
-        if (el.css('display') === 'none') { return false; }
-        if (el.css('visibility') === 'hidden') { return false; }
         el = el[0];
     }
 
@@ -39,7 +36,7 @@
         rect.right <= (window.innerWidth || document.documentElement.clientWidth) /*or $(window).width() */
     );
   }
-  
+
   var svgRectPath = function(top, left, bottom, right) {
     return ' M' + left + ',' + top +
         ' L' + left + ',' + bottom +
@@ -94,6 +91,8 @@
     overlayEl.css({
       'display': 'none',
       'position': 'absolute',
+      'overflow': 'hidden',
+      'max-height': '100%',
       'z-index': settings.zIndex,
       'top': 0,
       'left': 0,
@@ -130,14 +129,25 @@
     }
 
     // Build viewport path
-    wTop = window.scrollY;
-    wLeft = window.scrollX;
-    wBottom = wTop + window.innerHeight;
-    wRight = wLeft + window.innerWidth;
+    wTop = window.scrollY ||
+           window.pageYOffset ||
+           document.documentElement.scrollTop;
+    wLeft = window.scrollX ||
+            window.pageXOffset ||
+            document.documentElement.scrollLeft;
+    wBottom = wTop + (
+                window.innerHeight ||
+                document.documentElement.clientHeight
+              );
+    wRight = wLeft + (
+               window.innerWidth ||
+               document.documentElement.clientWidth
+             );
     svgEl.css({
       'width': wRight + 'px',
       'height': wBottom + 'px',
-      'opacity': settings.opacity
+      'opacity': settings.opacity,
+      'overflow': 'hidden'
     });
     var path = 'M' + wLeft + ',' + wTop +
         ' L' + wRight + ',' + wTop +
@@ -160,6 +170,7 @@
     els.each(function() {
       offset = $(this).offset();
       if (!isElementInViewport($(this))) { return; }
+      if ($(this).css('display') === 'none') { return; }
       top = offset.top;
       left = offset.left;
       bottom = top + $(this).outerHeight();
