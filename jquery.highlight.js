@@ -20,23 +20,6 @@
   var pathEl = null;
   var isDisplayed = false;
 
-  var isElementInViewport = function (el) {
-
-    //special bonus for those using jQuery
-    if (typeof jQuery === "function" && el instanceof jQuery) {
-        el = el[0];
-    }
-
-    var rect = el.getBoundingClientRect();
-
-    return (
-        rect.top >= 0 &&
-        rect.left >= 0 &&
-        rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) && /*or $(window).height() */
-        rect.right <= (window.innerWidth || document.documentElement.clientWidth) /*or $(window).width() */
-    );
-  }
-
   var svgRectPath = function(top, left, bottom, right) {
     return ' M' + left + ',' + top +
         ' L' + left + ',' + bottom +
@@ -143,6 +126,10 @@
     var left = offset.left - viewport.left;
     var bottom = top + $(element).outerHeight();
     var right = left + $(element).outerWidth();
+    if (top < 0) { top = 0; }
+    if (left < 0) { top = 0; }
+    if (right < 0) { top = 0; }
+    if (bottom < 0) { top = 0; }
     return {
       top: top,
       left: left,
@@ -161,7 +148,34 @@
     var left = offset.left;
     var bottom = top + $(element).outerHeight();
     var right = left + $(element).outerWidth();
-    return !(top < viewport.top || left < viewport.left || bottom > viewport.bottom || right > viewport.right)
+    return (
+      (
+        ((top > viewport.top) && (top < viewport.bottom)) ||
+        ((bottom < viewport.bottom) && (bottom > viewport.top))
+      ) &&
+      (
+        ((left > viewport.left) && (left < viewport.right)) ||
+        ((right > viewport.left) && (right < viewport.right))
+      )
+    )
+  }
+
+  var isElementVisible = function (el) {
+    //special bonus for those using jQuery
+    if (typeof jQuery === "function" && el instanceof jQuery) {
+        if (el.css('display') === 'none') { return false };
+        if (el.css('visibility') === 'hidden') { return false };
+        el = el[0];
+    }
+
+    return isElementInViewport(element);
+    // var rect = el.getBoundingClientRect();
+    // return (
+    //     rect.top >= 0 &&
+    //     rect.left >= 0 &&
+    //     rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) && /*or $(window).height() */
+    //     rect.right <= (window.innerWidth || document.documentElement.clientWidth) /*or $(window).width() */
+    // );
   }
 
   var resize = function(els) {
