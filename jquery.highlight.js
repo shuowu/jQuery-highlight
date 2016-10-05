@@ -193,12 +193,6 @@
         ' L' + 0 + ',' + viewport.height +
         ' L' + 0 + ',' + 0;
 
-    // var path = 'M' + viewport.left + ',' + viewport.top +
-    //     ' L' + viewport.right + ',' + viewport.top +
-    //     ' L' + viewport.right + ',' + viewport.bottom +
-    //     ' L' + viewport.left + ',' + viewport.bottom +
-    //     ' L' + viewport.left + ',' + viewport.top;
-
     // Highlight each target
     var pathFunc = svgRectPath;  // Default function
     if (settings.svgPathFunction) {
