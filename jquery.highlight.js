@@ -55,6 +55,23 @@
     };
   }
 
+  // Returns the path funciton to be used arround the highlighted elements
+  //
+  // @return [function(top, left, bottom, right)]
+  var getPathFunc = function () {
+    if (settings.svgPathFunction) {
+      return settings.svgPathFunction;
+    } else {
+      if (settings.svgPathStyle === 'circle') {
+        return svgCirclePath;
+      } else if (settings.svgPathStyle === 'radius') {
+        return generateSvgRadiusPath(settings.radius);
+      } else {
+        return svgRectPath;
+      }
+    }
+  }
+
   var init = function(options) {
     if (overlayEl) {
       return;
@@ -160,15 +177,32 @@
     )
   }
 
-  var isElementVisible = function (el) {
-    //special bonus for those using jQuery
-    if (typeof jQuery === "function" && el instanceof jQuery) {
-        if (el.css('display') === 'none') { return false };
-        if (el.css('visibility') === 'hidden') { return false };
-        el = el[0];
-    }
+  var isElementInPage = function (element) {
+    // Calculate viewport offset
+    var offset = $(element).offset();
+    var top = offset.top;
+    var left = offset.left;
+    var bottom = top + $(element).outerHeight();
+    var right = left + $(element).outerWidth();
+    return (
+      ((top > 0) || (bottom > 0)) &&
+      ((left > 0) || (right > 0))
+    )
+  }
 
-    return isElementInViewport(el);
+  var isElementVisible = function (el) {
+    el = $(el);
+    if (el.css('display') === 'none') { return false };
+    if (el.css('visibility') === 'hidden') { return false };
+    return true;
+  }
+
+  var isElementHighLingtable = function (el) {
+    return isElementVisible(el) && isElementInViewport(el);
+  }
+
+  var isScrollable = function(el){
+    return isElementVisible(el) && isElementInPage(el);
   }
 
   var resize = function(els) {
@@ -178,12 +212,15 @@
 
     // Check if first element in viewport
     // If not scrollIntoView
-    if (!isElementInViewport(els[0])) {
-      els[0].scrollIntoView();
+    var firstElement = els.filter(function(index, element) {
+      return isScrollable(element);
+    }).first()
+    if (firstElement && !isElementInViewport(firstElement)) {
+      firstElement.scrollIntoView();
     }
 
     // Calculate viewport offset
-    var viewport = getViewPort()
+    var viewport = getViewPort();
 
     // Build viewport path
     svgEl.css({
@@ -200,23 +237,14 @@
         ' L' + 0 + ',' + viewport.height +
         ' L' + 0 + ',' + 0;
 
-    // Highlight each target
-    var pathFunc = svgRectPath;  // Default function
-    if (settings.svgPathFunction) {
-      pathFunc = settings.svgPathFunction;
-    } else {
-      if (settings.svgPathStyle === 'circle') {
-        pathFunc = svgCirclePath;
-      } else if (settings.svgPathStyle === 'radius') {
-        pathFunc = generateSvgRadiusPath(settings.radius);
-      }
-    }
+    // Retrieve path function
+    var pathFunc = getPathFunc()
 
+    // Highlight each target
     els.each(function() {
-      if (!isElementVisible($(this))) { return; }
-      if ($(this).css('display') === 'none') { return; }
-      var item_offset = getElementOffset(this);
-      path += pathFunc(item_offset.top, item_offset.left, item_offset.bottom, item_offset.right);
+      if (!isElementHighLingtable(this)) { return; }
+      var itemOffset = getElementOffset(this);
+      path += pathFunc(itemOffset.top, itemOffset.left, itemOffset.bottom, itemOffset.right);
     });
 
     pathEl.attr('d', path);
