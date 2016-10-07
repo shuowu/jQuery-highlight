@@ -216,7 +216,7 @@
       return isScrollable(element);
     }).first()
     if (firstElement && !isElementInViewport(firstElement)) {
-      firstElement.scrollIntoView();
+      $(firstElement)[0].scrollIntoView();
     }
 
     // Calculate viewport offset
